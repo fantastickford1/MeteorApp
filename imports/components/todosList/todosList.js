@@ -8,6 +8,8 @@ class TodosListCtrl {
   constructor($scope) {
     $scope.viewModel(this);
 
+     this.subscribe('tasks');
+
     this.hideCompleted = false;
 
     this.helpers({
@@ -42,34 +44,24 @@ class TodosListCtrl {
   }
 
   addTask(newTask) {
-    Tasks.insert({
-      text: newTask,
-      createdAt: new Date,
-      owner: Meteor.userId(),
-      username: Meteor.user().username
-    });
+    Meteor.call('tasks.insert', newTask);
 
     this.newTask = '';
   }
 
 
-setChecked(task){
+  setChecked(task){
+    Meteor.call('tasks.setChecked', task._id, !task.checked);
+  }
 
-  Tasks.update(task._id, {
-    $set: {
-      checked: !task.checked
-    },
-  });
+  removeTask(task){
+    Meteor.call('tasks.remove', task._id);
+  }
+
+  setPrivate(task) {
+    Meteor.call('tasks.setPrivate', task._id, !task.private);
+  }
 }
-
-removeTask(task){
-  Tasks.remove(task._id);
-}
-
-
-}
-
-
 
 export default angular.module('todosList', [
   angularMeteor
